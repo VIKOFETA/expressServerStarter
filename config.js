@@ -1,6 +1,6 @@
 module.exports = {
   appDefaultPort: '3301',
-  jwtKey: "vikoVONfeta",
+  jwtKey: "SECRET_KEY",
   database: {
     type: 'mysql',
     address: 'localhost',
