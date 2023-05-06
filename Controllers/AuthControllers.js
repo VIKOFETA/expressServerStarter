@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
 
     const role = await Role.findOne({ where: { id: user.role_id } })
 
-    const token = await generateToken(user.user_id, user.role_id);
+    const token = await generateToken(user.id, user.role_id);
 
     return res.status(200).json({token: token, user: user, role: role});
 

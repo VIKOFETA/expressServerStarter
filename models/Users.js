@@ -2,26 +2,32 @@
 const Sequelize = require("sequelize");
 const sequelize = require('../db');
 
-const User = sequelize.define('User', {
-  user_id: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-    autoIncrement: true,
-    primaryKey: true,
+const User = sequelize.define(
+  'User', 
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    role_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+    },
+    login: {
+      type: Sequelize.STRING(60),
+      allowNull: false,
+    },
+    password: {
+      type: Sequelize.STRING(120),
+      allowNull: false,
+    },
   },
-  role_id: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
-  login: {
-    type: Sequelize.STRING(60),
-    allowNull: false,
-  },
-  password: {
-    type: Sequelize.STRING(120),
-    allowNull: false,
-  },
-});
+  {
+    tableName: 'users',
+  }
+);
 
 const Role = require('./Roles');
 User.belongsTo(Role, { foreignKey: 'role_id' });

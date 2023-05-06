@@ -1,6 +1,8 @@
 const Sequelize = require("sequelize");
 const sequelize = require('../db');
 
+// default roles should be: "ADMIN", "USER"
+
 const Roles = sequelize.define(
   'Roles', 
   {

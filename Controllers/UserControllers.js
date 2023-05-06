@@ -20,7 +20,7 @@ exports.getOne = async (req, res) => {
     if(!id) {
       res.status(400).json({'message': 'Id is not find, please add id.'})
     }
-    await User.findOne({ where: { user_id: id } })
+    await User.findOne({ where: { id: id } })
       .then(user=>{
         res.send(user)
       })
@@ -64,7 +64,7 @@ exports.delete = async (req, res) => {
     if(!id) {
       res.status(400).json({'message': 'Id is not find, please add id.'})
     }
-    await User.destroy({where: {user_id: id} }).then((result) => {
+    await User.destroy({where: {id: id} }).then((result) => {
       res.status(200).json({id: id, 'message': 'User Successfuly deleted', response: result})
     }).catch(err=>console.log(err));
   } catch(e) {
