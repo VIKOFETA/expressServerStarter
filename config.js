@@ -6,6 +6,6 @@ module.exports = {
     address: 'localhost',
     database: 'express_node',
     login: 'root',
-    password: root
+    password: 'root'
   }
 }
