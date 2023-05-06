@@ -1,16 +1,15 @@
-const User = require('../models/Users')
-const Role = require('../models/Roles')
+const User = require('../models/User').User
+const Role = require('../models/Role').Role
+const connection = require('../db')
 
 exports.getAll = async (req, res) => {
   try {
-    await User.findAll({raw:true})
-      .then(users=>{
-        res.send(users)
-      })
-      .catch(err=>{
-        res.status(500).json(err);
-      });
+    const response = await connection
+      .getRepository(User)
+      .find();
+    res.send(response);
   } catch(e) {
+    console.log(e);
     res.status(500).json(e);
   }
 };
@@ -20,13 +19,9 @@ exports.getOne = async (req, res) => {
     if(!id) {
       res.status(400).json({'message': 'Id is not find, please add id.'})
     }
-    await User.findOne({ where: { id: id } })
-      .then(user=>{
-        res.send(user)
-      })
-      .catch(err=>{
-        res.status(500).json(err);
-      });
+
+    const response = await connection.getRepository(User).findOneBy({id: id});
+    res.send(response);
   } catch(e) {
     res.status(500).json(e);
   }
@@ -36,22 +31,19 @@ exports.create = async (req, res) => {
   try{
     const { login, password, role } = req.body;
 
-    const tempUser = await User.findOne({ where: { login: login } });
+    const tempUser = await connection.getRepository(User).findOneBy({login: login});
     if(tempUser) {
       res.status(400).json({ message: 'User login already exists', login: login});
     }
 
-    const userRole = await Role.findOne({ where: { name: { [Op.eq]: role } } });
-
+    const userRole = await connection.getRepository(Role).findOneBy({name: role});
     if(!userRole){
       res.status(400).json({ message: 'Role not found', role: role});
     }
 
-    User.create({ login: login, role: userRole.id, password: password})
-    .then((result)=>{
-      res.json({message: 'User added successfully', response: result });
-    })
-    .catch(err=>console.log(err));
+    const user = connection.getRepository(User).create({ login: login, role_id: userRole.id, password: password});
+    const response = await connection.getRepository(User).save(user);
+    res.json({message: 'User added successfully', response: response });
 
   } catch(e) {
     res.status(500).json(e);
@@ -62,11 +54,10 @@ exports.delete = async (req, res) => {
   try {
     const { id } = req.params;
     if(!id) {
-      res.status(400).json({'message': 'Id is not find, please add id.'})
+      res.status(400).json({message: 'Id is not find, please add id.'})
     }
-    await User.destroy({where: {id: id} }).then((result) => {
-      res.status(200).json({id: id, 'message': 'User Successfuly deleted', response: result})
-    }).catch(err=>console.log(err));
+    const response = await connection.getRepository(User).delete(id);  
+    res.status(200).json({id: id, message: 'User Successfuly deleted', response: response})
   } catch(e) {
     res.status(500).json(e);
   }
@@ -77,19 +68,19 @@ exports.setRole = async (req, res) => {
     if(!login || !role) {
       res.status(400).json({message: 'Login or role is not indicated.'})
     }
-    const user = await User.findOne({ where: { login: login } });
+    const user = await connection.getRepository(User).findOneBy({login: login});
     if (!user) {      
       res.status(400).json({message: `User ${login}, not found`})
     }
-    const roleObj = await Role.findOne({ where: { name: role } });
+    const roleObj = await connection.getRepository(Role).findOneBy({name: role});
     if (!roleObj) {      
-      res.status(400).json({message: `Role ${login}, not found`})
+      res.status(400).json({message: `Role ${role}, not found`})
     }
 
     user.role_id = roleObj.id;
-    const response = await user.save();
+    const response = await connection.getRepository(User).update({login: login}, { role_id: roleObj.id });
 
-    res.status(200).json({message: `Role for ${login} updated`, response: response});
+    res.status(200).json({message: `Role ${role} was set for ${login}`, response: response});
   } catch(e) {
     res.status(500).json(e);
   }

@@ -1,23 +1,25 @@
 const { database } = require('./config');
+const path = require('path');
+const typeorm = require("typeorm")
 
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize(
-  database.database,
-  database.login, 
-  database.password, 
-  {
-    dialect: database.type,
-    host: database.address
-  }
-);
+const dataSource = new typeorm.DataSource({
+    type: database.type,
+    host: database.address,
+    port: 3306,
+    username: database.login,
+    password: database.password,
+    database: database.database,
+    // logging: true,
+    synchronize: true,
+    entities: [ path.join(__dirname, "entities/**/*.js") ],
+})
 
-// sequelize.sync({ force: true })
-sequelize.sync()
-  .then((result)=>{
-    //console.log(result);
-  })
-  .catch((err)=> {
-    console.log('sequelize error', err)
-  });
+dataSource
+    .initialize()
+    .then(function () {
+        console.log('Connection to database successful');
+    }).catch(function (error) {
+        console.log("Connection to database error: ", error)
+    })
 
-module.exports = sequelize;
+module.exports = dataSource;

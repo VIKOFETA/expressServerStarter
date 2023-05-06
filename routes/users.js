@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const db = require('../db');
 const { check } = require('express-validator');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
@@ -22,5 +21,11 @@ router.post('/', [
 ], UserControllers.create);
 router.delete('/:id', [ authMiddleware, roleMiddleware(['ADMIN'])], UserControllers.delete);
 router.put('/setRole', [ authMiddleware, roleMiddleware(['ADMIN'])], UserControllers.setRole)
+
+// router.get('/', UserControllers.getAll);
+// router.get('/:id', UserControllers.getOne);
+// router.post('/', UserControllers.create);
+// router.delete('/:id',UserControllers.delete);
+// router.put('/setRole', UserControllers.setRole)
 
 module.exports = router;
