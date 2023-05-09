@@ -28,13 +28,12 @@ module.exports = new EntitySchema({
     }
   },
   relations: {
-    roles: {
-      target: "Role",
-      type: "one-to-many",
+    role: {
+      type: 'many-to-one',
+      target: 'Role',
       joinColumn: {
         name: 'role_id',
       },
-      cascade: true
-    }
+    },
   }
 });
